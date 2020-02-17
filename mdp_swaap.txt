@@ -1,0 +1,10 @@
+pwd : ?!e5Lf)CZDP$J14
+
+
+client_id : 3a16f4201e6f4549b7b16283c35fe93c
+
+client_secret : 2156058ab5884df6a7ab03689a78824c
+
+3a16f4201e6f4549b7b16283c35fe93c:2156058ab5884df6a7ab03689a78824c
+
+DB: 1EAgUR0g6Z

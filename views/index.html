@@ -1,0 +1,8 @@
+<h2>Koala - a directory Koala of attributes</h2>
+<ul class="list-group">
+  <% attributes.forEach( function(attribute) { %>
+    <li class="list-group-item">
+      <%= attribute.meta_name %> - <%= attribute.meta_value %>
+    </li>
+  <% }); %>
+</ul>
