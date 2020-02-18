@@ -1,0 +1,35 @@
+{
+  "name": "swaap-music-back",
+  "version": "1.0.0",
+  "description": "Backend of swaap-music application",
+  "main": "index.js",
+  "dependencies": {
+    "koa": "^2.11.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-ejs": "^4.2.0",
+    "koa-router": "^7.4.0",
+    "mysql2": "^2.1.0",
+    "request": "^2.88.0",
+    "sequelize": "^5.21.4",
+    "sequelize-cli": "^5.5.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SwaapInc/swaap-music-back.git"
+  },
+  "keywords": [
+    "swaap",
+    "music",
+    "backend"
+  ],
+  "author": "swaapInc",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SwaapInc/swaap-music-back/issues"
+  },
+  "homepage": "https://github.com/SwaapInc/swaap-music-back#readme"
+}
