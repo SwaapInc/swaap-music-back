@@ -14,6 +14,7 @@ const deezerAccountRouter = require('./route/deezerAccount.route')
 const songRouter = require('./route/song.route')
 const spotifyAccountRouter = require('./route/spotifyAccount.model')
 const userRouter = require('./route/user.route')
+const ssoRouter = require('./route/sso.route')
 const db = require('./config/db.config.js');
 
 const PORT = process.env.PORT || 1234;
@@ -304,10 +305,8 @@ router.post('user', '/api/user', async (ctx) => {
 router.get('get_user_playlist', '/api/user/playlist/:id', async (ctx) => {
     let accessToken
     if (await isAccessTokenValid()) {
-        //console.log('valid')
         accessToken = (await readAccessToken())['access_token']
     } else {
-        //console.log('expired')
         accessToken = await getNewAccessToken()
     }
 
@@ -330,6 +329,7 @@ songRouter(router)
 spotifyAccountRouter(router)
 //deezerAccountRouter(router)
 userRouter(router)
+ssoRouter(router)
 
 app.use(router.routes())
     .use(router.allowedMethods())
