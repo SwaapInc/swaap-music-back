@@ -15,7 +15,9 @@ const songRouter = require('./route/song.route')
 const spotifyAccountRouter = require('./route/spotifyAccount.model')
 const userRouter = require('./route/user.route')
 const db = require('./config/db.config.js');
-  
+
+const PORT = process.env.PORT || 1234;
+
 db.sequelize.sync().then(() => {
   console.log('DB has been synchronized { force: false }');
 });
@@ -332,4 +334,7 @@ userRouter(router)
 app.use(router.routes())
     .use(router.allowedMethods())
 
-app.listen(1234, () => console.log('running on port 1234'))
+app.listen(PORT, () => {
+    console.log(`running on port ${ PORT }`);
+});
+//app.listen(1234, () => console.log('running on port 1234'))
