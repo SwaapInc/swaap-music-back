@@ -1,9 +1,10 @@
 const env = {
-    database: 'yU44Oz9ZN7',
-    username: 'yU44Oz9ZN7',
-    password: '1Pz9STOphq',
-    host: 'remotemysql.com',
-    dialect: 'mysql',
+    database: 'postgres',
+    username: 'postgres',
+    password: '',
+    host: 'localhost',
+    dialect: 'postgres',
+    port: 5432,
     pool: {
       max: 5,
       min: 0,
