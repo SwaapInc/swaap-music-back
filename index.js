@@ -15,6 +15,7 @@ const songRouter = require('./route/song.route')
 const spotifyAccountRouter = require('./route/spotifyAccount.model')
 const userRouter = require('./route/user.route')
 const ssoRouter = require('./route/sso.route')
+const authentRouter = require('./route/authentication.route')
 const db = require('./config/db.config.js');
 
 const PORT = process.env.PORT || 1234;
@@ -293,14 +294,14 @@ router.get('advanced_search_deezer', '/api/deezer/search/advanced', async (ctx) 
     ctx.body = res
 })
 
-router.post('user', '/api/user', async (ctx) => {
+/*router.post('user', '/api/user', async (ctx) => {
     ctx.body = JSON.stringify({
         id: 1,
         pseudo: 'Jeremy',
         role: 0,
         avatar: '/dist/assets/media/users/jeremy_morvan.jpg'
     })
-})
+})*/
 
 router.get('get_user_playlist', '/api/user/playlist/:id', async (ctx) => {
     let accessToken
@@ -330,6 +331,7 @@ spotifyAccountRouter(router)
 //deezerAccountRouter(router)
 userRouter(router)
 ssoRouter(router)
+authentRouter(router)
 
 app.use(router.routes())
     .use(router.allowedMethods())

@@ -4,8 +4,6 @@ const SongPlaylist = db.song_playlist
 
 exports.create = (req, res) => {
     const {body} = req.request
-    console.log('body')
-    console.log(body)
     Playlist.create({
         name: body.name,
         updated: body.email,
