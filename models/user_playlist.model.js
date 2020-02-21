@@ -2,7 +2,8 @@ module.exports = (sequelize, Sequelize) => {
     const User_Playlist = sequelize.define('user_playlist', {
         id: {
             type: Sequelize.INTEGER,
-            primaryKey: true
+            primaryKey: true,
+            autoIncrement: true
         },
         canRead: {
             type: Sequelize.BOOLEAN,
