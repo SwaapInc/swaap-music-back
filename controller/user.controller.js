@@ -1,52 +1,90 @@
 const db = require('../config/db.config.js');
 const User = db.user;
 
-exports.create = (req, res) => {
-    const {body} = req.request
-    User.create({
+function formatUserLite(user) {
+    return {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        firstName: user.first_name,
+        name: user.name,
+    }
+}
+
+exports.create = async (ctx) => {
+    const {body} = ctx.request
+    const res = await User.create({
         username: body.username,
         email: body.email,
         password: body.password,
         first_name: body.first_name,
         name: body.name
     }).then(user => {
-        res.send(user);
+        const userLite = formatUserLite(user)
+        return userLite;
     });
+    ctx.body = res;
 };
 
-exports.findAll = (req, res) => {
-    User.findAll().then(users => {
-        res.send(users);
+exports.findAll = async (ctx) => {
+    const res = await User.findAll().then(users => {
+        const usersLite = users.map(user => formatUserLite(user))
+        return usersLite;
     });
+    ctx.body = res;
 };
 
-exports.findById = (req, res) => {
-    User.findById(req.params.userId).then(user => {
-        res.send(user);
+exports.findByPk = async (ctx) => {
+    const res = await User.findByPk(ctx.params.userId).then(user => {
+        const userLite = formatUserLite(user)
+        return userLite;
     })
+    ctx.body = res;
 };
 
-exports.update = (req, res) => {
-    const id = req.params.userId;
-    const {body} = req.request
-    User.update({
+exports.update = async (ctx) => {
+    const id = ctx.params.userId;
+    const {body} = ctx.request
+    const res = await User.update({
             username: body.username,
             email: body.email,
             password: body.password,
             first_name: body.first_name,
             name: body.name
         },
-        {where: {id: req.params.userId}}
-    ).then(() => {
-        res.status(200).send("updated successfully a user with id = " + id);
+        {where: {id: ctx.params.userId}}
+    ).then((response) => {
+        if(response[0] === 1) {
+            return {
+                status: 200,
+                body: "updated successfully a user with id = " + id,
+            }
+        } else {
+            return {
+                status: 400,
+                body: "updated failed of user with id = " + id,
+            }
+        }
     });
+    ctx.body = res;
 };
 
-exports.delete = (req, res) => {
-    const id = req.params.userId;
-    User.destroy({
+exports.delete = async (ctx) => {
+    const id = ctx.params.userId;
+    const res = await User.destroy({
         where: {id: id}
-    }).then(() => {
-        res.status(200).send('deleted successfully a user with id = ' + id);
+    }).then((response) => {
+        if(response === 1) {
+            return {
+                status: 200,
+                body: 'deleted successfully a user with id = ' + id,
+            }
+        } else {
+            return {
+                status: 400,
+                body: "deleted failed of user with id = " + id,
+            }
+        }
     });
+    ctx.body = res;
 };
