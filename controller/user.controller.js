@@ -1,7 +1,8 @@
 const db = require('../config/db.config.js');
+const bcrypt = require('bcrypt');
 const User = db.user;
 
-function formatUserLite(user) {
+const formatUserLite = (user) => {
     return {
         id: user.id,
         username: user.username,
@@ -13,15 +14,24 @@ function formatUserLite(user) {
 
 exports.create = async (ctx) => {
     const {body} = ctx.request
-    const res = await User.create({
-        username: body.username,
-        email: body.email,
-        password: body.password,
-        first_name: body.first_name,
-        name: body.name
-    }).then(user => {
-        const userLite = formatUserLite(user)
-        return userLite;
+    const res = await bcrypt.hash(body.password, 10, async (err, hash) => {
+        if(hash) {
+            User.create({
+                username: body.username,
+                email: body.email,
+                password: hash,
+                first_name: body.first_name,
+                name: body.name
+            }).then(user => {
+                const userLite = formatUserLite(user)
+                return userLite;
+            });
+        } else {
+            return {
+                status: 400,
+                body: "create user failed : here was err : " + err,
+            }
+        }
     });
     ctx.body = res;
 };
@@ -41,6 +51,18 @@ exports.findByPk = async (ctx) => {
     })
     ctx.body = res;
 };
+
+exports.findByUserName = async (ctx) => {
+    const {username} = ctx.request.body
+    const res = await User.findOne({
+        where: {
+            username
+        }
+    }).then(user => {
+        return user ? user.dataValues : {};
+    });
+    return res;
+}
 
 exports.update = async (ctx) => {
     const id = ctx.params.userId;

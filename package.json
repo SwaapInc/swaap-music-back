@@ -4,6 +4,7 @@
   "description": "Backend of swaap-music application",
   "main": "index.js",
   "dependencies": {
+    "bcrypt": "^4.0.0",
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.2.1",
     "koa-ejs": "^4.2.0",
