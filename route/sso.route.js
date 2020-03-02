@@ -1,7 +1,7 @@
 const request = require('request')
 
 module.exports = function(app) {
-    const redirect_uri = "https://swaap-music-front.heroku.com/public/callback";
+    const redirect_uri = "https://swaap-music-front.herokuapp.com/public/callback";
     const client_id = '3a16f4201e6f4549b7b16283c35fe93c'
     const client_secret = '2156058ab5884df6a7ab03689a78824c'
 
@@ -36,7 +36,11 @@ module.exports = function(app) {
                 } else {
                     reject( {
                         status: response.statusCode,
-                        body: 'invalid grant',
+                        body: {
+                            error,
+                            response,
+                            body,
+                        },
                     })
                 }
             })
