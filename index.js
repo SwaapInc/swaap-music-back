@@ -294,6 +294,47 @@ router.get('advanced_search_deezer', '/api/deezer/search/advanced', async (ctx) 
     ctx.body = res
 })
 
+router.get('user_playlist_spotify', '/api/spotify/user/playlists', async (ctx) => {
+    const {query} = ctx.request
+    const {access_token, refresh_token} = query
+    const url = `https://api.spotify.com/v1/me/playlists`
+
+    const options = {
+        url,
+        headers: { 'Authorization': `Basic ${access_token}`}
+    }
+
+    const res = await request(options, function (error, response, body) {
+        if(error) {
+            return {
+                status: 400,
+                body: `Failed to import user playlist, here was error :  ${error}`
+            }
+        }
+        console.log('statusCode : ', response && response.statusCode)
+        return body
+    })
+
+    console.log('res')
+    console.log(res)
+
+    const items = res.items.map((item) => ({
+        id: item.id,
+        image: item.images.length > 0 ? item.images[0] : null,
+        name: item.name
+    }))
+
+    ctx.body = {
+        status: 200,
+        playlists: {
+            limit: res.limit,
+            next: res.next,
+            total: res.total,
+            items
+        }
+    }
+})
+
 /*router.post('user', '/api/user', async (ctx) => {
     ctx.body = JSON.stringify({
         id: 1,
