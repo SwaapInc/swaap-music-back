@@ -1,65 +1,124 @@
 const db = require('../config/db.config.js');
 const Song = db.song;
 
-exports.create = (req, res) => {
-    const {body} = req.request
-    Song.create({
-        username: body.username,
-        email: body.email,
-        password: body.password,
-        first_name: body.first_name,
-        name: body.name
-    }).then(song => {
-        res.send(song);
+exports.create = async (ctx) => {
+
+    const body = ctx.request.body
+    
+    const response = await Song.create({
+        name: body.name,
+        artist: body.artist,
+        img: body.img,
+        album: body.album,
+        spotify_song_Id: body.spotify_Song_Id,
+        deezer_song_Id: body.deezer_Song_Id
+    }, async (res) => {
+        ctx.body = {
+            status: 200,
+            body: res
+        }
     });
+
+    ctx.body = response
+
 };
 
-exports.findAll = (req, res) => {
-    Song.findAll().then(songs => {
-        res.send(songs);
+exports.findAll = async (ctx) => {
+    const response = await Song.findAll({}, async (res) => {
+        return {
+            status: 200,
+            body: songs
+        }
     });
+
+    ctx.body = response
+
 };
 
-exports.findById = (req, res) => {
-    Song.findById(req.params.songId).then(song => {
-        res.send(song);
+exports.findById = async (ctx) => {
+    const params = ctx.params
+    const id = params.id;    
+
+    const response = await Song.findByPk(id, async (res) => {
+        return {
+            status: 200,
+            body: song
+        }
     })
+
+    ctx.body = response
+
 };
 
-exports.update = (req, res) => {
-    const id = req.params.songID;
-    const {body} = req.request
-    Song.update({
-            username: body.username,
-            email: body.email,
-            password: body.password,
-            first_name: body.first_name,
-            name: body.name
+exports.update = async (ctx) => {
+    const params = ctx.params
+    const body = ctx.request.body
+    const id = params.id;    
+
+    const response = await Song.update({
+            name: body.name,
+            artist: body.artist,
+            img: body.img,
+            album: body.album,
+            spotify_song_Id: body.spotify_Song_Id,
+            deezer_song_Id: body.deezer_Song_Id
         },
-        {where: {id: req.params.songId}}
-    ).then(() => {
-        res.status(200).send("updated successfully a song with id = " + id);
+        {where: {id: id}}
+    , async () => {
+        return {
+            status: 200,
+            body: 'updated successfully a song with id = ' + id
+        }
     });
+
+    ctx.body = response
+
 };
 
-exports.delete = (req, res) => {
-    const id = req.params.songId;
-    Song.destroy({
+exports.delete = async (ctx) => {
+    const params = ctx.params
+    const id = params.id;   
+
+    const response = await Song.destroy({
         where: {id: id}
-    }).then(() => {
-        res.status(200).send('deleted successfully a song with id = ' + id);
+    }, async () => {
+        return {
+            status: 200,
+            body: "deleted successfully a song with id = " + id
+        }
     });
+
+    ctx.body = response
+
 };
 
 
-exports.getDeezerId = (req, res) => {
-    Song.findOne({where: {spotifyId: req.params.spotifyId}}).then(song => {
-        res.send(song.deeezerId)
+exports.getDeezerId = async (ctx) => {
+    const params = ctx.params
+    const id = params.id;
+
+    const response = await Song.findByPK(id, async (res) => {
+        return {
+            status: 200,
+            body: song.deezer_song_Id
+        }
     })
+
+    ctx.body = response
+
 }
 
-exports.getSpotifyId = (req, res) => {
-    Song.findOne({where: {deeezerId: req.params.deezerId}}).then(song => {
-        res.send(song.spotifyId)
+exports.getSpotifyId = async (ctx) => {
+    const params = ctx.params
+    const id = params.id;
+
+    const response = await Song.findByPK(id, async (res) => {
+        return {
+            status: 200,
+            body: song.spotify_song_Id
+        }
     })
+
+    ctx.body = response
+
 }

@@ -10,9 +10,7 @@ const fs = require('fs')
 const app = new koa()
 const router = new koaRouter()
 const playlistRouter = require('./route/playlist.route')
-const deezerAccountRouter = require('./route/deezerAccount.route')
 const songRouter = require('./route/song.route')
-const spotifyAccountRouter = require('./route/spotifyAccount.model')
 const userRouter = require('./route/user.route')
 const ssoRouter = require('./route/sso.route')
 const authentRouter = require('./route/authentication.route')
@@ -20,9 +18,13 @@ const db = require('./config/db.config.js');
 
 const PORT = process.env.PORT || 1234;
 
-db.sequelize.sync().then(() => {
-  console.log('DB has been synchronized { force: false }');
-});
+db.sequelize.sync({
+    //use force:true to update model 
+    //!! DROP TABLES AND CONTENTS !!
+    //force:true
+}).then(() => {
+    console.log('DB has been synchronized');
+  });
 
 function writeAccessToken(entry) {
     fs.writeFile('./properties/access.json', entry, (err) => {
@@ -90,7 +92,7 @@ app.use(async (ctx, next) => {
         ctx.status = err.status || 500;
         ctx.body = err.message;
     }
-})
+ })
 
 render(app, {
     root: path.join(__dirname, 'views'),
@@ -327,8 +329,6 @@ router.get('get_user_playlist', '/api/user/playlist/:id', async (ctx) => {
 
 playlistRouter(router)
 songRouter(router)
-spotifyAccountRouter(router)
-//deezerAccountRouter(router)
 userRouter(router)
 ssoRouter(router)
 authentRouter(router)
