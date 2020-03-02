@@ -2,18 +2,21 @@ module.exports = function(app) {
  
     const controller = require('../controller/playlist.controller.js');
  
-    // Create a new Customer
+    // Create a new Playlist
     app.post('/api/playlists', controller.create);
  
-    // Retrieve all Customer
+    // Retrieve all Playlist
     app.get('/api/playlists', controller.findAll);
  
-    // Retrieve a single Customer by Id
-    app.get('/api/playlists/:playlistId', controller.findById);
+    // Retrieve a single Playlist by Id
+    app.get('/api/playlists/:id', controller.findById);
  
-    // Update a Customer with Id
-    app.put('/api/playlists/:playlistId', controller.update);
+    // Update a Playlist with Id
+    app.put('/api/playlists/:id', controller.update);
  
-    // Delete a Customer with Id
-    app.delete('/api/playlists/:playlistId', controller.delete);
+    // Delete a Playlist with Id
+    app.delete('/api/playlists/:id', controller.delete);
+
+    // Update a Playlist tracks with playlist id
+    app.put('/api/tracks/:id', controller.updateTracks);
 }

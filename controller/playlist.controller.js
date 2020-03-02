@@ -1,66 +1,149 @@
 const db = require('../config/db.config.js');
-const Playlist = db.playlist;
-const SongPlaylist = db.song_playlist
+const Song = db.song;
+const Playlist = db.playlist
 
-exports.create = (req, res) => {
-    const {body} = req.request
-    Playlist.create({
+exports.create = async (ctx) => {
+    const body = ctx.request.body
+
+    const response = await Playlist.create({
         name: body.name,
-        updated: body.email,
-        deezer_Id: body.tracks.deezer_Id,
-        spotify_Id: body.tracks.spotify_Id,
-    }).then(playlist => {
-        res.send(playlist);
-    });
-};
-
-exports.findAll = (req, res) => {
-    Playlist.findAll().then(playlists => {
-        res.send(playlist);
-    });
-};
-
-exports.findById = (req, res) => {
-    Playlist.findById(req.params.playlistId).then(playlist => {
-        res.send(playlist);
+        updated: false,
+        ownerId: body.ownerId,
+        deezer_Id: body.deezer_Id,
+        spotify_Id: body.spotify_Id,
+    }, async (res) => {
+        return {
+            status: 200,
+            body: res
+        }
     })
+
+    ctx.body = response
 };
 
-exports.update = (req, res) => {
-    const id = req.params.playlistId;
-    const {body} = req.request
+exports.findAll = async (ctx) => {
+    const response = await Playlist.findAll({}, async (res) => {
+        return {
+            status: 200,
+            body: res
+        }
+    })
+    ctx.body = response
+};
 
-    console.log('body')
-    console.log(body)
+exports.findById = async (ctx) => {
+    const params = ctx.params
+    const id = params.id
 
-    Playlist.update({
-            name: body.name,
-            updated: body.email,
-            deezer_Id: body.deezer_Id,
-            spotify_Id: body.spotify_Id,
+    const response = await Playlist.findByPk(id, async (res) => {
+        return {
+            status: 200,
+            body: res
+        }
+    })
+    
+    ctx.body = response
+};
+
+exports.update = async (ctx) => {
+    const params = ctx.params
+    const body = ctx.request.body
+    const id = params.id;
+
+    var response = Playlist.update({
+        name: body.name,
+        updated: true,
+        deezer_Id: body.deezer_Id,
+        spotify_Id: bobdy.spotify_Id,
         },
-        {where: {id: req.params.playlistId}}
-    ).then(() => {
-        res.status(200).send("updated successfully a playlist with id = " + id);
+        {
+            where: {id: id}
+        }
+    , async (res) => {
+        return {
+            status: 200,
+            body: res
+        }
     });
+    ctx.body = response
 };
 
-exports.delete = (req, res) => {
-    const id = req.params.playlistId;
-    Playlist.destroy({
+exports.delete = async (ctx) => {
+    const params = ctx.params
+    const id = params.id;
+
+    var response = await Playlist.destroy({
         where: {id: id}
     }).then(() => {
-        res.status(200).send('deleted successfully a playlist with id = ' + id);
+        return {
+            status: 200,
+            body: "deleted successfully a playlist with id = " + id
+        }
     });
+
+    ctx.body = response
 };
 
-exports.addSong = (req, res) => {
-    const {body} = req.request
-    const playlistId = body.playlistId
-    const songId = body.songId
-    SongPlaylist.create({})
-}
+exports.updateTracks = async (ctx) => {
+    const params = ctx.params
+    const body = ctx.request.body
+    const id = params.id
 
-exports.removeSong = (req, res) => {
+    const songs = [];
+    const ids = body.ids;
+    
+    for (var i = 0; i < ids.length; i++) {
+        var song = await Song.findByPk(ids[i]);
+        songs.push(song);
+    }
 
+    var playlist = await Playlist.findByPk(id)
+    if(playlist === null) 
+        ctx.body = {
+            status: 400,
+            body: 'playlist id:' + id + ' not found'
+        }
+    else {
+        const response = new Promise((resolve, reject) => {
+            playlist.setSongs(songs, () => {
+                resolve ({
+                    status:200,
+                    body: 'ok'
+                })
+            })
+        })
+
+        ctx.body = response
+    }
+    // var response = await Playlist.findByPk(id, async(res) => {
+    //     if(res == null)
+    //         return {
+    //             status: 400,
+    //             body: 'playlist id:' + id + ' not found'
+    //         }
+    //     else {
+    //         return await playlist.setSongs(songs, async() => {
+    //             return {
+    //                 status: 200,
+    //                 body: 'ok'
+    //             }
+    //         });
+    //     }
+    // })
+    
+    // if(playlist == null) {
+    //     return {
+    //             status: 400,
+    //             body: 'playlist id:' + id + ' not found'
+    //         }
+    //     }
+    //     playlist.setSongs(songs);
+    // }).then(x =>{
+    //     return {
+    //         status: 200,
+    //         body: 'tracks have been added to playlist ' + id
+    //     }
+    // })
+
+    //ctx.body = response
 }
