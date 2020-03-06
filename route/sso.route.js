@@ -28,19 +28,15 @@ module.exports = function(app) {
                     resolve (
                         {
                             status: response.statusCode,
-                            tokens: JSON.stringify({
+                            tokens: {
                                 access_token,
                                 refresh_token,
-                            })
+                            }
                         })
                 } else {
                     reject( {
                         status: response.statusCode,
-                        body: {
-                            error,
-                            response,
-                            body,
-                        },
+                        body: response.body
                     })
                 }
             })
