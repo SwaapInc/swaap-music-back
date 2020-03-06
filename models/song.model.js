@@ -5,11 +5,23 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             autoIncrement: true
         },
+        name: {
+            type:Sequelize.STRING
+        },
+        artist: {
+            type: Sequelize.STRING
+        },
+        album: {
+            type: Sequelize.STRING
+        },
+        img: {
+            type: Sequelize.STRING
+        },
         spotify_song_Id: {
-            type: Sequelize.INTEGER
+            type: Sequelize.STRING
         },
         deezer_song_Id: {
-            type: Sequelize.INTEGER
+            type: Sequelize.STRING
         }
     })
     

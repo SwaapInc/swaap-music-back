@@ -14,26 +14,39 @@ const formatUserLite = (user) => {
 
 exports.create = async (ctx) => {
     const {body} = ctx.request
-    const res = await bcrypt.hash(body.password, 10, async (err, hash) => {
-        if(hash) {
-            User.create({
-                username: body.username,
-                email: body.email,
-                password: hash,
-                first_name: body.first_name,
-                name: body.name
-            }).then(user => {
-                const userLite = formatUserLite(user)
-                return userLite;
-            });
-        } else {
-            return {
-                status: 400,
-                body: "create user failed : here was err : " + err,
+    const res = await new Promise((resolve, reject) => {
+        bcrypt.hash(body.password, 10, async (err, hash) => {
+            if (hash) {
+                try {
+                    const data = await User.create({
+                        username: body.username,
+                        email: body.email,
+                        password: hash,
+                        first_name: body.first_name,
+                        name: body.name
+                    })
+
+                    const user = data.toJSON()
+                    const userLite = formatUserLite(user)
+                    resolve({
+                        status: 200,
+                        userInfos: userLite
+                    })
+                } catch (e) {
+                    reject({
+                        status: 500,
+                        body: "create user failed : here was err : " + err,
+                    })
+                }
+            } else {
+                reject({
+                    status: 400,
+                    body: "create user failed : here was err : " + err,
+                })
             }
-        }
-    });
-    ctx.body = res;
+        })
+    })
+    ctx.body = res
 };
 
 exports.findAll = async (ctx) => {

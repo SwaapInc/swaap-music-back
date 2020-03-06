@@ -20,12 +20,8 @@ module.exports = function(app) {
         if (user.password) {
             const hash = bcrypt.compareSync(password, user.password);
             if(hash) { //Authentification succes
-                console.log('user')
-                console.log(user)
                 const userLite = formatUserLite(user);
-                console.log('userLite')
-                console.log(userLite)
-                const a = {
+                const body = {
                     status: 200,
                     body: 'Authentication success for username : ' + username,
                     userInfos : {
@@ -100,7 +96,7 @@ module.exports = function(app) {
                         }
                     }
                 }
-                ctx.body = a;
+                ctx.body = body;
             } else {
                 ctx.body =  {
                     status: 400,

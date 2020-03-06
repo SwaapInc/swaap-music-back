@@ -10,9 +10,7 @@ const fs = require('fs')
 const app = new koa()
 const router = new koaRouter()
 const playlistRouter = require('./route/playlist.route')
-const deezerAccountRouter = require('./route/deezerAccount.route')
 const songRouter = require('./route/song.route')
-const spotifyAccountRouter = require('./route/spotifyAccount.model')
 const userRouter = require('./route/user.route')
 const ssoRouter = require('./route/sso.route')
 const authentRouter = require('./route/authentication.route')
@@ -20,9 +18,13 @@ const db = require('./config/db.config.js');
 
 const PORT = process.env.PORT || 1234;
 
-db.sequelize.sync().then(() => {
-  console.log('DB has been synchronized { force: false }');
-});
+db.sequelize.sync({
+    //use force:true to update model 
+    //!! DROP TABLES AND CONTENTS !!
+    //force:true
+}).then(() => {
+    console.log('DB has been synchronized');
+  });
 
 function writeAccessToken(entry) {
     fs.writeFile('./properties/access.json', entry, (err) => {
@@ -90,7 +92,7 @@ app.use(async (ctx, next) => {
         ctx.status = err.status || 500;
         ctx.body = err.message;
     }
-})
+ })
 
 render(app, {
     root: path.join(__dirname, 'views'),
@@ -113,10 +115,8 @@ router.get('get_playlist_spotify', '/api/spotify/get/playlists/:id/tracks',async
 
     let accessToken
     if (await isAccessTokenValid()) {
-        //console.log('valid')
         accessToken = (await readAccessToken())['access_token']
     } else {
-        //console.log('expired')
         accessToken = await getNewAccessToken()
     }
 
@@ -294,41 +294,76 @@ router.get('advanced_search_deezer', '/api/deezer/search/advanced', async (ctx) 
     ctx.body = res
 })
 
-/*router.post('user', '/api/user', async (ctx) => {
-    ctx.body = JSON.stringify({
-        id: 1,
-        pseudo: 'Jeremy',
-        role: 0,
-        avatar: '/dist/assets/media/users/jeremy_morvan.jpg'
-    })
-})*/
-
-router.get('get_user_playlist', '/api/user/playlist/:id', async (ctx) => {
-    let accessToken
-    if (await isAccessTokenValid()) {
-        accessToken = (await readAccessToken())['access_token']
-    } else {
-        accessToken = await getNewAccessToken()
-    }
+router.get('user_playlist_spotify', '/api/spotify/user/playlists', async (ctx) => {
+    const {query} = ctx.request
+    const {access_token} = query
+    const url = `https://api.spotify.com/v1/me/playlists`
 
     const options = {
-        url: `https://api.spotify.com/v1/playlists/${ctx.params.id}`,
-        headers: { 'Authorization': 'Bearer ' + accessToken }
+        url,
+        headers: { 'Authorization': `Bearer ${access_token}`}
     }
 
-    const res = await request(options, function (error, response, body) {
-        console.error('error : ', error)
-        console.log('statusCode : ', response && response.statusCode)
-        return body
+    await new Promise((resolve, reject) => {
+        request(options, function (error, response, body) {
+            const res = JSON.parse(body)
+            if(res.error) {
+                reject({
+                    status: res.error.status,
+                    body: `Failed to import user playlist, here was error :  ${res.error.message}`
+                })
+            } else {
+                resolve({
+                    status: 200,
+                    body: res.items.map((item) => ({
+                        id: item.id,
+                        image: item.images.length > 0 ? item.images[0].url : null,
+                        name: item.name
+                    }))
+                })
+            }
+        })
+    }).then((resolve) => {
+        ctx.body = resolve
+    }).catch((reject) => {
+        ctx.body = reject
     })
-
-    ctx.body = res
 })
+
+router.get('user_playlist_deezer', '/api/deezer/user/playlists', async (ctx) => {
+    const {query} = ctx.request
+    const {access_token} = query
+    const url = `https://api.deezer.com/user/me/playlists?access_token=${access_token}`
+
+    await new Promise((resolve, reject) => {
+        request(url, function (error, response, body) {
+            const res = JSON.parse(body)
+            if(res.error) {
+                reject({
+                    status: res.error.status,
+                    body: `Failed to import user playlist, here was error :  ${res.error.message}`
+                })
+            } else {
+                resolve({
+                    status: 200,
+                    body: res.data.map((item) => ({
+                        id: item.id,
+                        image: item.picture_xl ? item.picture_xl : item.picture,
+                        name: item.title
+                    }))
+                })
+            }
+        })
+    }).then((resolve) => {
+        ctx.body = resolve
+    }).catch((reject) => {
+        ctx.body = reject
+    })
+})
+
 
 playlistRouter(router)
 songRouter(router)
-spotifyAccountRouter(router)
-//deezerAccountRouter(router)
 userRouter(router)
 ssoRouter(router)
 authentRouter(router)
@@ -339,4 +374,3 @@ app.use(router.routes())
 app.listen(PORT, () => {
     console.log(`running on port ${ PORT }`);
 });
-//app.listen(1234, () => console.log('running on port 1234'))
