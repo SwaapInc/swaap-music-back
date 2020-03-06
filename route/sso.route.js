@@ -81,5 +81,231 @@ module.exports = function(app) {
             ctx.body = reject
         })
     })
+
+    app.get('user_infos_spotify', '/api/spotify/user', async (ctx) => {
+        const {query} = ctx.request
+        const {access_token} = query
+
+        const authOptions = {
+            url: 'https://api.spotify.com/v1/me',
+            headers: {
+                'Authorization': `Bearer ${access_token}`
+            },
+        }
+
+        await new Promise((resolve, reject) => {
+            request.get(authOptions, async (error, response, body) => {
+                const res = JSON.parse(body)
+                if (response.statusCode === 200) {
+                    resolve (
+                        {
+                            status: 200,
+                            body: {
+                                id: res.id
+                            }
+                        })
+                } else {
+                    reject( {
+                        status: response.statusCode,
+                        body: res.error.message
+                    })
+                }
+            })
+        }).then((resolve) => {
+            ctx.body = resolve
+        }).catch((reject) => {
+            ctx.body = reject
+        })
+    })
+
+    app.post('user_playlists_spotify', '/api/spotify/user/playlists', async (ctx) => {
+        const {accessToken, userId, playlistName} = ctx.request.body
+
+        const authOptions = {
+            url: `https://api.spotify.com/v1/users/${userId}/playlists`,
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: playlistName,
+                public: false
+            })
+        }
+        await new Promise((resolve, reject) => {
+            request.post(authOptions, async (error, response, body) => {
+                const res = JSON.parse(body)
+                if (response.statusCode === 201) {
+                    resolve (
+                        {
+                            status: 201,
+                            body: {
+                                id: res.id
+                            }
+                        })
+                } else {
+                    reject( {
+                        status: response.statusCode,
+                        body: res.error.message
+                    })
+                }
+            })
+        }).then((resolve) => {
+            ctx.body = resolve
+        }).catch((reject) => {
+            ctx.body = reject
+        })
+    })
+
+    app.post('user_playlists_deezer', '/api/deezer/user/playlists', async (ctx) => {
+        const {accessToken, playlistName} = ctx.request.body
+
+        const authOptions = {
+            url: `https://api.deezer.com/user/me/playlists?access_token=${accessToken}`,
+            body: JSON.stringify({
+                title: playlistName
+            })
+        }
+        await new Promise((resolve, reject) => {
+            request.post(authOptions, async (error, response, body) => {
+                const res = JSON.parse(body)
+                if (response.statusCode === 201) {
+                    resolve (
+                        {
+                            status: 201,
+                            body: {
+                                id: res.id
+                            }
+                        })
+                } else {
+                    reject( {
+                        status: response.statusCode,
+                        body: res.error.message
+                    })
+                }
+            })
+        }).then((resolve) => {
+            ctx.body = resolve
+        }).catch((reject) => {
+            ctx.body = reject
+        })
+    })
+
+    app.put('replace_playlist_spotify', '/api/spotify/playlists', async (ctx) => {
+        const {accessToken, playlistId, playlist} = ctx.request.body
+        let playlistFormat
+        try {
+            playlistFormat = playlist.map((track) => `spotify:track:${track}`)
+        }catch (e) {
+            playlistFormat = []
+        }
+        const authOptions = {
+            url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                uris: playlistFormat
+            })
+        }
+
+        await new Promise((resolve, reject) => {
+            request.put(authOptions, async (error, response, body) => {
+                const res = JSON.parse(body)
+                if (response.statusCode === 201) {
+                    resolve ({
+                            status: 201
+                        })
+                } else {
+                    reject( {
+                        status: response.statusCode,
+                        body: res.error.message
+                    })
+                }
+            })
+        }).then((resolve) => {
+            ctx.body = resolve
+        }).catch((reject) => {
+            ctx.body = reject
+        })
+    })
+
+    app.post('add_playlist_spotify', '/api/spotify/playlists', async (ctx) => {
+        const {accessToken, playlistId, playlist} = ctx.request.body
+        let playlistFormat
+        try {
+            playlistFormat = playlist.map((track) => `spotify:track:${track}`)
+        }catch (e) {
+            playlistFormat = []
+        }
+        const authOptions = {
+            url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                uris: playlistFormat
+            })
+        }
+
+        await new Promise((resolve, reject) => {
+            request.post(authOptions, async (error, response, body) => {
+                const res = JSON.parse(body)
+                if (response.statusCode === 201) {
+                    resolve ({
+                        status: 201
+                    })
+                } else {
+                    reject( {
+                        status: response.statusCode,
+                        body: res.error.message
+                    })
+                }
+            })
+        }).then((resolve) => {
+            ctx.body = resolve
+        }).catch((reject) => {
+            ctx.body = reject
+        })
+    })
+
+    app.post('add_playlist_deezer', '/api/deezer/playlists', async (ctx) => {
+        const {accessToken, playlistId, playlist} = ctx.request.body
+        let playlistFormat
+        try {
+            playlistFormat = playlist.toString()
+        }catch (e) {
+            playlistFormat = ''
+        }
+        const authOptions = {
+            url: `https://api.deezer.com/playlist/${playlistId}/tracks?access_token=${accessToken}`,
+            body: JSON.stringify({
+                songs: playlistFormat
+            })
+        }
+
+        await new Promise((resolve, reject) => {
+            request.post(authOptions, async (error, response, body) => {
+                const res = JSON.parse(body)
+                if (response.statusCode === 201) {
+                    resolve ({
+                        status: 201
+                    })
+                } else {
+                    reject( {
+                        status: response.statusCode,
+                        body: res.error.message
+                    })
+                }
+            })
+        }).then((resolve) => {
+            ctx.body = resolve
+        }).catch((reject) => {
+            ctx.body = reject
+        })
+    })
+
 }
 
