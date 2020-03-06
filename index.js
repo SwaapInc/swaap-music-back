@@ -113,10 +113,8 @@ router.get('get_playlist_spotify', '/api/spotify/get/playlists/:id/tracks',async
 
     let accessToken
     if (await isAccessTokenValid()) {
-        //console.log('valid')
         accessToken = (await readAccessToken())['access_token']
     } else {
-        //console.log('expired')
         accessToken = await getNewAccessToken()
     }
 
@@ -315,9 +313,6 @@ router.get('user_playlist_spotify', '/api/spotify/user/playlists', async (ctx) =
         return body
     })
 
-    console.log('res')
-    console.log(res)
-
     const items = res.items.map((item) => ({
         id: item.id,
         image: item.images.length > 0 ? item.images[0] : null,
@@ -334,15 +329,6 @@ router.get('user_playlist_spotify', '/api/spotify/user/playlists', async (ctx) =
         }
     }
 })
-
-/*router.post('user', '/api/user', async (ctx) => {
-    ctx.body = JSON.stringify({
-        id: 1,
-        pseudo: 'Jeremy',
-        role: 0,
-        avatar: '/dist/assets/media/users/jeremy_morvan.jpg'
-    })
-})*/
 
 router.get('get_user_playlist', '/api/user/playlist/:id', async (ctx) => {
     let accessToken
@@ -380,4 +366,3 @@ app.use(router.routes())
 app.listen(PORT, () => {
     console.log(`running on port ${ PORT }`);
 });
-//app.listen(1234, () => console.log('running on port 1234'))
