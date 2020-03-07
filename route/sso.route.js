@@ -118,7 +118,7 @@ module.exports = function(app) {
         })
     })
 
-    app.post('user_playlists_spotify', '/api/spotify/user/playlists', async (ctx) => {
+    app.post('create_user_playlists_spotify', '/api/spotify/user/playlists', async (ctx) => {
         const {accessToken, userId, playlistName} = ctx.request.body
 
         const authOptions = {
@@ -157,30 +157,27 @@ module.exports = function(app) {
         })
     })
 
-    app.post('user_playlists_deezer', '/api/deezer/user/playlists', async (ctx) => {
+    app.post('create_user_playlists_deezer', '/api/deezer/user/playlists', async (ctx) => {
         const {accessToken, playlistName} = ctx.request.body
 
-        const authOptions = {
-            url: `https://api.deezer.com/user/me/playlists?access_token=${accessToken}`,
-            body: JSON.stringify({
-                title: playlistName
-            })
-        }
+        const url = `https://api.deezer.com/user/me/playlists`
+                + `?access_token=${accessToken}`
+                + `&title=${playlistName}`
+
         await new Promise((resolve, reject) => {
-            request.post(authOptions, async (error, response, body) => {
+            request.post(url, async (error, response, body) => {
                 const res = JSON.parse(body)
-                if (response.statusCode === 201) {
-                    resolve (
-                        {
-                            status: 201,
-                            body: {
-                                id: res.id
-                            }
-                        })
+                if(res.id) {
+                    resolve({
+                        status: 201,
+                        body: {
+                            id: res.id
+                        },
+                    })
                 } else {
                     reject( {
-                        status: response.statusCode,
-                        body: res.error.message
+                        status: '400',
+                        body: res.body
                     })
                 }
             })
@@ -279,14 +276,16 @@ module.exports = function(app) {
         }catch (e) {
             playlistFormat = ''
         }
+
         const url = `https://api.deezer.com/playlist/${playlistId}/tracks`
                 + `?access_token=${accessToken}`
                 + `&songs=${playlistFormat}`
+                + `&`
 
         await new Promise((resolve, reject) => {
             request.post(url, async (error, response, body) => {
                 const res = JSON.parse(body)
-                if (response.statusCode === 201) {
+                if (res === true) {
                     resolve ({
                         status: 201
                     })
