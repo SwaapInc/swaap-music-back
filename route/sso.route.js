@@ -281,7 +281,7 @@ module.exports = function(app) {
         }
         const url = `https://api.deezer.com/playlist/${playlistId}/tracks`
                 + `?access_token=${accessToken}`
-                + `?songs=${playlistFormat}`
+                + `&songs=${playlistFormat}`
 
         await new Promise((resolve, reject) => {
             request.post(url, async (error, response, body) => {
