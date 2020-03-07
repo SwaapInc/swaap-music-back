@@ -193,10 +193,16 @@ router.get('advanced_search_spotify', '/api/spotify/search/advanced', async (ctx
     const {query} = ctx.request
     const {type, title, artist, album} = query
     let url
+
+    const encodedType = type ? encodeURI(type) : ''
+    const encodedTitle = title ? encodeURI(title) : ''
+    const encodedArtist = artist ? encodeURI(artist) : ''
+    const encodedAlbum = album ? encodeURI(album) : ''
+
     if(album !== null) {
-        url = `https://api.spotify.com/v1/search?q=artist:${artist} track:${title} album:${album}&type=${type}`
+        url = `https://api.spotify.com/v1/search?q=artist:${encodedArtist} track:${encodedTitle} album:${encodedAlbum}&type=${encodedType}`
     } else {
-        url = `https://api.spotify.com/v1/search?q=artist:${artist} track:${title}&type=${type}"`
+        url = `https://api.spotify.com/v1/search?q=artist:${encodedArtist} track:${encodedTitle}&type=${encodedType}"`
     }
 
     let accessToken
@@ -275,10 +281,16 @@ router.get('advanced_search_deezer', '/api/deezer/search/advanced', async (ctx) 
     const {query} = ctx.request
     const {title, artist, album, type} = query
     let url
+
+    const encodedType = type ? encodeURI(type) : ''
+    const encodedTitle = title ? encodeURI(title) : ''
+    const encodedArtist = artist ? encodeURI(artist) : ''
+    const encodedAlbum = album ? encodeURI(album) : ''
+
     if(album !== null) {
-        url = `https://api.deezer.com/search?q=artist:"${artist}"track:"${title}""album:"${album}&type=${type}`
+        url = `https://api.deezer.com/search?q=artist:"${encodedArtist}"track:"${encodedTitle}""album:"${encodedAlbum}&type=${encodedType}`
     } else {
-        url = `https://api.deezer.com/search?q=artist:"${artist}"track:"${title}&type=track"`
+        url = `https://api.deezer.com/search?q=artist:"${encodedArtist}"track:"${encodedTitle}"&type=${encodedType}`
     }
 
     const options = {
