@@ -279,15 +279,12 @@ module.exports = function(app) {
         }catch (e) {
             playlistFormat = ''
         }
-        const authOptions = {
-            url: `https://api.deezer.com/playlist/${playlistId}/tracks?access_token=${accessToken}`,
-            body: JSON.stringify({
-                songs: playlistFormat
-            })
-        }
+        const url = `https://api.deezer.com/playlist/${playlistId}/tracks`
+                + `?access_token=${accessToken}`
+                + `?songs=${playlistFormat}`
 
         await new Promise((resolve, reject) => {
-            request.post(authOptions, async (error, response, body) => {
+            request.post(url, async (error, response, body) => {
                 const res = JSON.parse(body)
                 if (response.statusCode === 201) {
                     resolve ({
