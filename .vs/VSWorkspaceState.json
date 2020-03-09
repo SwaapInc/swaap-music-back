@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\controller",
+    "\\route"
   ],
-  "SelectedNode": "\\index.js",
+  "SelectedNode": "\\controller\\playlist.controller.js",
   "PreviewInSolutionExplorer": false
 }

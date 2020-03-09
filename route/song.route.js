@@ -2,24 +2,24 @@ module.exports = function(app) {
  
     const controller = require('../controller/song.controller.js');
  
-    // Create a new Customer
+    // Create a new song
     app.post('/api/songs', controller.create);
  
-    // Retrieve all Customer
+    // Retrieve all songs
     app.get('/api/songs', controller.findAll);
  
-    // Retrieve a single Customer by Id
-    app.get('/api/songs/:songId', controller.findById);
+    // Retrieve a single song by Id
+    app.get('/api/songs/:id', controller.findById);
  
-    // Update a Customer with Id
-    app.put('/api/songs/:songId', controller.update);
+    // Update a song with Id
+    app.put('/api/songs/:id', controller.update);
  
-    // Delete a Customer with Id
-    app.delete('/api/songs/:songId', controller.delete);
+    // Delete a song with Id
+    app.delete('/api/songs/:id', controller.delete);
     
-    //get deezer song from spotifyId
-    app.get('/api/deezerSong/:spotifyId', controller.getDeezerId);
+    //get deezer id by id
+    app.get('/api/deezerSong/:id', controller.getDeezerId);
 
-    //get spotify song from deezerId
-    app.get('/api/spotifySong/:deezerId', controller.getSpotifyId);
+    //get spotify id by id
+    app.get('/api/spotifySong/:id', controller.getSpotifyId);
 }

@@ -22,14 +22,14 @@ module.exports = function(app) {
             if(hash) { //Authentification succes
                 const userLite = formatUserLite(user);
                 //todo get saved playlist and return it
-                const a = {
+                const body = {
                     status: 200,
                     body: 'Authentication success for username : ' + username,
                     userInfos : {
                         user: userLite,
                     }
                 }
-                ctx.body = a;
+                ctx.body = body;
             } else {
                 ctx.body =  {
                     status: 400,
