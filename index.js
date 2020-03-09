@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 1234;
 db.sequelize.sync({
     //use force:true to update model 
     //!! DROP TABLES AND CONTENTS !!
-    force:true
+    //force:true
 }).then(() => {
     console.log('DB has been synchronized');
   });
