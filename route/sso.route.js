@@ -285,7 +285,7 @@ module.exports = function(app) {
         await new Promise((resolve, reject) => {
             request.post(url, async (error, response, body) => {
                 const res = JSON.parse(body)
-                if (res === true) {
+                if (res === true || res === 'true')  {
                     resolve ({
                         status: 201
                     })
