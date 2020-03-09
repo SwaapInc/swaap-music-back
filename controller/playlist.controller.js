@@ -54,7 +54,7 @@ exports.update = async (ctx) => {
         name: body.name,
         updated: true,
         deezer_Id: body.deezer_Id,
-        spotify_Id: bobdy.spotify_Id,
+        spotify_Id: body.spotify_Id,
         },
         {
             where: {id: id}
