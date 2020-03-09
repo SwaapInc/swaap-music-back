@@ -5,8 +5,8 @@ module.exports = function(app) {
     // Create a new Playlist
     app.post('/api/playlists', controller.create);
  
-    // Retrieve all Playlist
-    app.get('/api/playlists', controller.findAll);
+    // Retrieve a user playlists
+    app.get('/api/user/:id/playlists', controller.findAll);
  
     // Retrieve a single Playlist by Id
     app.get('/api/playlists/:id', controller.findById);
