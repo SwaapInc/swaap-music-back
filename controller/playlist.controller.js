@@ -22,7 +22,15 @@ exports.create = async (ctx) => {
 };
 
 exports.findAll = async (ctx) => {
-    const response = await Playlist.findAll({}, async (res) => {
+    const params = ctx.params
+    const id = params.id
+
+    const response = await Playlist.findAll({
+        where: {ownerId: id},
+        include: [{
+            model: Song
+        }]
+    }, async (res) => {
         return {
             status: 200,
             body: res
