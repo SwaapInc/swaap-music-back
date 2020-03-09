@@ -35,6 +35,11 @@ exports.findAll = async (ctx) => {
             status: 200,
             body: res
         }
+    }).catch((res) => {
+        return {
+            status: 400,
+            body: res
+        }
     })
     ctx.body = response
 };
